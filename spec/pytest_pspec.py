@@ -1,76 +1,39 @@
 import pytest
-
+from pspec import Context, Runner
+import inspect
+import imp
+import os
 
 def pytest_addoption(parser):
-    """Add option to collect Konira test cases"""
-    group = parser.getgroup('pyspec group')
-    group.addoption('--spec', action='store_true', help='Collects PySpec test cases')
-
-
+    group = parser.getgroup('pspec group')
+    group.addoption('--pspec', action='store_true', help='Collects pspec test cases')
 
 def pytest_collect_file(path, parent):
-    if parent.config.option.spec and path.basename.lower().startswith("case_"):
+    if parent.config.option.pspec and path.ext == '.py':
         return SpecFile(path, parent)
-
-
 
 class SpecFile(pytest.File):
     def collect(self):
-        classes = get_classes(self.fspath.strpath, None)
+        collector = Runner()
 
-        for case in classes:
-
-            # Initialize the test class
-            suite = case()
-
-            # check test environment setup
-            environ = TestEnviron(suite)
-
-            methods = get_methods(suite, None)
-            if not methods: return
-
-            # Are we skipping?
-            if safe_skip_call(environ.set_skip_if):
-                return
-
-            let_attrs = get_let_attrs(suite)
-
-            # Set before all if any
-            environ.set_before_all()
-
-            for test in methods:
-                yield KoniraItem(str(test), self, suite, test, let_attrs)
-
-            # Set after all if any
-            environ.set_after_all()
-
-
+        module = imp.load_source(os.path.basename(self.fspath.purebasename), self.fspath.strpath)
+        for _, context in inspect.getmembers(module, inspect.isclass):
+            if issubclass(context, Context):
+                for ctx, example, parent in collector.examples(context):
+                    yield SpecItem(context.__name__, self, ctx, example)
 
 class SpecItem(pytest.Item):
 
-
-    def __init__(self, name, parent, case, spec, let_attrs):
-        super(KoniraItem, self).__init__(name, parent)
-        self.spec = spec
-        self.let_attrs = let_attrs
-        self.case = set_let_attrs(case, let_attrs)
-
+    def __init__(self, name, parent, ctx, example):
+        super(SpecItem, self).__init__(name, parent)
+        self.ctx = ctx
+        self.example = example
 
     def runtest(self):
-        # check test environment setup
-        environ = TestEnviron(self.case)
-
-        # Set before each if any
-        environ.set_before_each()
-
-        case = set_let_attrs(self.case, self.let_attrs)
-        getattr(case, self.spec)()
-
-        # Set after each if any
-        environ.set_after_each()
+        self.ctx.run(self.example)
 
     def reportinfo(self):
-        describe = "describe %s" % name_convertion(self.case.__class__.__name__)
-        it = name_convertion(self.name, capitalize=False)
+        describe = "describe %s" % self.ctx.__class__.__name__
+        it = self.example.__name__
         describe_and_it = "%s ==>> %s" % (describe, it)
         return self.fspath, 0, describe_and_it

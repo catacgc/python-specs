@@ -7,7 +7,20 @@ class EmptyContext(object):
 
 class Runner(object):
 
-    def run(self, context, parent_context=EmptyContext):
+    def __init__(self):
+        self.collected = []
+
+    def run(self, context):
+        for ctx, example, parent in self.examples(context):
+            ctx.run(example)
+
+    def examples(self, context):
+        self.collected = []
+        self.collect_from_context(context)
+
+        return self.collected
+
+    def collect_from_context(self, context, parent_context=EmptyContext):
         examples, let, hooks, sub_contexts = {}, {}, {}, {}
         for name, the_type in context.__dict__.items():
             if name.find('it_') == 0:
@@ -26,11 +39,12 @@ class Runner(object):
                 sub_contexts[name] = the_type
 
         for name, example in examples.items():
-            context(parent_context, let, hooks).run(example)
+            ctx = context(parent_context, let, hooks)
+            self.collected.append((ctx, example, parent_context))
 
         for name, sub_context in sub_contexts.items():
             new_parent_context = context(parent_context, let, hooks)
-            self.run(sub_context, new_parent_context)
+            self.collect_from_context(sub_context, new_parent_context)
 
 class Context(object):
 
