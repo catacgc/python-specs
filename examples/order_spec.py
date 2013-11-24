@@ -1,18 +1,6 @@
-## Overview
+from specs import Context
+from examples.order import *
 
-Python specs make it easy to write good python specifications for your test subjects
-
-It has very few conventions and it provides integrations with established python testing tools like [py.test](http://pytest.org/latest/)
-
-## Install
-
-```
-pip install specs
-```
-
-## Basic structure
-
-```python
 class OrderSpec(Context):
 
     def let_quantity(self): return 10
@@ -48,22 +36,3 @@ class OrderSpec(Context):
 
             def it_should_be_euros(self):
                 assert self.currency == 'EUR'
-```
-
-## Running the specs
-
-With py.test: `py.test --specs`
-
-With specs.py: `specs.py`
-
-```
-order spec:
-    order total:
-        it should account for quantity
-        with empty quantity:
-            it should be zero
-    order currency:
-        it should be dollars
-        with euros:
-            it should be euros
-```
