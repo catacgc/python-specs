@@ -1,5 +1,7 @@
 import inspect
 
+__version__ = '0.1.0'
+
 class EmptyContext(object):
     _let = {}
     _before_hooks = []
