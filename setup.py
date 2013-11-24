@@ -4,8 +4,8 @@ import specs
 if __name__ == "__main__":
     setup(
         name='specs',
-        description='easy python test specifications inspired by rspec',
-        long_description=open("README.md").read(),
+        description='easy, readable python test specifications inspired by rspec',
+        #long_description=open("README.rst").read(),
         version=specs.__version__,
         license='MIT',
         author='Catalin Costache',

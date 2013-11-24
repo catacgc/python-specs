@@ -124,7 +124,7 @@ def it_should_sum_up(self):
     assert self.sum == 3
 ```
 
-### Before And Hooks
+### Before And After Hooks
 
  There are two types of hooks: `before` and `after`. These are methods defined in a context and, as the name implies,
  they are run automatically before each example from that context.
