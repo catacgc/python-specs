@@ -1,4 +1,4 @@
-from pspec import Context, run_all
+from specs import Context, run_all
 
 class DescribeLet(Context):
     A = 1
@@ -74,8 +74,8 @@ class DescribeAfterHooks(Context):
             DescribeAfterHooks.RUN_ORDER.append(1)
 
 class DescribeContextNesting(Context):
-    def let_a(self): return self.one
     def let_one(self): return 1
+    def let_a(self): return self.one
 
     class First(Context):
         def let_a(self): return self.parent.a + 1
