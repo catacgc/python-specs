@@ -5,7 +5,7 @@ if __name__ == "__main__":
     setup(
         name='specs',
         description='easy, readable python test specifications inspired by rspec',
-        #long_description=open("README.rst").read(),
+        long_description=open("README.md").read(),
         version=specs.__version__,
         license='MIT',
         author='Catalin Costache',

@@ -16,7 +16,7 @@ class SpecFile(pytest.File):
     def collect(self):
         collector = Runner()
 
-        module = imp.load_source(os.path.basename(self.fspath.purebasename), self.fspath.strpath)
+        module = self.fspath.pyimport()
         for _, context in inspect.getmembers(module, inspect.isclass):
             if issubclass(context, Context):
                 for ctx, example, parent in collector.examples(context):

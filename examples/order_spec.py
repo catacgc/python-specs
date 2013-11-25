@@ -1,11 +1,14 @@
 from specs import Context
-from examples.order import *
+from order import *
 
 class OrderSpec(Context):
 
     def let_quantity(self): return 10
     def let_money(self):
-        return Money(10, 'USD')
+        return Money(10, self.type)
+
+    def let_type(self):
+        return 'USD'
 
     def let_order(self):
         return Order(self.quantity, self.money)
@@ -31,8 +34,7 @@ class OrderSpec(Context):
             assert self.currency == 'USD'
 
         class WithEuros(Context):
-            def let_money(self):
-                return Money(10, 'EUR')
 
             def it_should_be_euros(self):
+                self.type = 'EUR'
                 assert self.currency == 'EUR'
