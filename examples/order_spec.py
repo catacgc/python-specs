@@ -1,5 +1,5 @@
 from specs import Context
-from order import *
+from .order import *
 
 class OrderSpec(Context):
 

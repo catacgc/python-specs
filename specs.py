@@ -53,7 +53,7 @@ class Context(object):
     def __init__(self, parent_context=EmptyContext, let={}, hooks={}):
         self.parent = parent_context
 
-        self._let = dict(self.parent._let.items() + let.items())
+        self._let = dict(list(self.parent._let.items()) + list(let.items()))
         self._before_hooks = self.parent._before_hooks + hooks.setdefault('before', [])
         self._after_hooks = self.parent._after_hooks + hooks.setdefault('after', [])
 
