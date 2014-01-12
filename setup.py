@@ -1,18 +1,21 @@
 from setuptools import setup
-import specs
+import pspecs
 
 if __name__ == "__main__":
     setup(
-        name='specs',
+        name='pspecs',
         description='easy, readable python test specifications inspired by rspec',
-        version=specs.__version__,
+        version=pspecs.__version__,
         license='MIT',
         author='Catalin Costache',
         author_email='catacgc@gmail.com',
-        url='http://github.com/catacgc/specs/',
-        py_modules=['specs', 'pytest_specs'],
-        entry_points={'pytest11': ['pep8 = pytest_specs']},
-        install_requires=['pytest>=2.4.2'],
+        url='http://github.com/catacgc/python-specs/',
+        py_modules=['pspecs', 'pytest_specs', 'nose_specs'],
+        entry_points={
+            'pytest11': ['specs = pytest_specs'],
+            'nose.plugins.0.10': ['specs = nose_specs:SpecsPlugin']
+        },
+        install_requires=['pytest>=2.4.2', 'nose>=1.3.0'],
         classifiers=[
             'Development Status :: 3 - Alpha',
             'Intended Audience :: Developers',

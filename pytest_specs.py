@@ -1,8 +1,6 @@
 import pytest
-from specs import Context, Runner
+from pspecs import Context
 import inspect
-import imp
-import os
 
 def pytest_addoption(parser):
     group = parser.getgroup('specs group')
@@ -14,26 +12,21 @@ def pytest_collect_file(path, parent):
 
 class SpecFile(pytest.File):
     def collect(self):
-        collector = Runner()
 
         module = self.fspath.pyimport()
         for _, context in inspect.getmembers(module, inspect.isclass):
             if issubclass(context, Context):
-                for ctx, example, parent in collector.examples(context):
-                    yield SpecItem(example.__name__, self, ctx, example)
+                for test in context.discovered_test_cases():
+                    yield SpecItem(context.__class__.__name__, self, test)
 
 class SpecItem(pytest.Item):
 
-    def __init__(self, name, parent, ctx, example):
+    def __init__(self, name, parent, test):
         super(SpecItem, self).__init__(name, parent)
-        self.ctx = ctx
-        self.example = example
+        self.test = test
 
     def runtest(self):
-        self.ctx.run(self.example)
+        self.test.run()
 
     def reportinfo(self):
-        describe = self.ctx.__class__.__name__
-        it = self.example.__name__
-        describe_and_it = "%s => %s" % (describe, it)
-        return self.fspath, 0, describe_and_it
+        return self.fspath, 0, self.test.name()

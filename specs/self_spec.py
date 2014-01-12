@@ -1,4 +1,4 @@
-from specs import Context, run_all
+from pspecs import Context, let
 
 class DescribeLet(Context):
     A = 1
@@ -28,18 +28,24 @@ class DescribeLet(Context):
             assert self.A == 1
 
 class DescribeLetMemoizesValues(Context):
-    COUNTER = 0
 
-    def let_a(self):
-        self.__class__.COUNTER += 1
-        return self.COUNTER
+    previous = None
+
+    @property
+    def rand(self):
+        import random
+        return random.random()
+
+    @let
+    def a(self):
+        return self.rand
 
     def it_memoizes_the_value(self):
-        assert self.a == 1
-        assert self.a == 1
+        self.__class__.previous = self.a
+        assert self.a == self.__class__.previous
 
     def it_is_not_cached_across_examples(self):
-        assert self.a == 2
+        assert self.a != self.__class__.previous
 
 class DescribeBeforeHooks(Context):
 
@@ -74,23 +80,22 @@ class DescribeAfterHooks(Context):
             DescribeAfterHooks.RUN_ORDER.append(1)
 
 class DescribeContextNesting(Context):
-    def let_one(self): return 1
-    def let_a(self): return self.one
+
+    @let
+    def one(self): return 1
+
+    @let
+    def a(self): return self.one
 
     class First(Context):
-        def let_a(self): return self.parent.a + 1
+
+        @let
+        def a(self): return self.parent.a + 1
 
         class Second(Context):
-            def let_a(self): return self.parent.a + 1
+
+            @let
+            def a(self): return self.parent.a + 1
 
             def it_should_be_3(self):
                 assert self.a == 3
-
-if __name__ == '__main__':
-    run_all([
-        DescribeLet,
-        DescribeLetMemoizesValues,
-        DescribeBeforeHooks,
-        DescribeAfterHooks,
-        DescribeContextNesting,
-    ])
