@@ -4,4 +4,4 @@ python:
   - "3.3"
 
 install: "pip install ."
-script: "py.test --specs"
+script: "nosetests --with-specs"
