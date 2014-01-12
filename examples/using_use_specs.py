@@ -1,19 +1,28 @@
-from .order import *
+
 from pspecs import Context
+from .order import *
 
-class DescribeOrder(Context):
-
-    def let_quantity(self): return 10
+class MoneyContext(Context):
     def let_money(self):
         return Money(10, self.type)
 
     def let_type(self):
         return 'USD'
 
+class OrderContext(Context):
+
+    def let_quantity(self):
+        return 10
+
     def let_order(self):
         return Order(self.quantity, self.money)
 
-    class DescribeOrderTotal(Context):
+class OrderSpec(Context):
+
+    def __init__(self):
+        self.use(OrderContext)
+
+    class OrderTotal(Context):
         def let_total(self):
             return self.order.total()
 
@@ -26,7 +35,7 @@ class DescribeOrder(Context):
             def it_should_be_zero(self):
                 assert self.total == 0
 
-    class DescribeOrderCurrency(Context):
+    class OrderCurrency(Context):
         def let_currency(self):
             return self.order.currency()
 

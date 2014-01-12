@@ -1,18 +1,22 @@
 ## Overview
 
-Python specs make it easy to write good python specifications for your test subjects
+*pspecs* is a testing library that concentrates on making it easy to build test subjects, isolate test runs
+and write readable specifications
 
-It has very few conventions and it provides integrations with established python testing tools like [py.test](http://pytest.org/latest/)
+It has very few conventions and it provides integrations with established
+python testing tools like [py.test](http://pytest.org/latest/) or [nose](http://nose.readthedocs.org/en/latest/)
 
 ## Install
 
 ```
-pip install specs
+pip install pspecs
 ```
 
 ## Basic structure - [source](./examples/order_spec.py)
 
 ```python
+from pspecs import Context
+
 class OrderSpec(Context):
 
     def let_quantity(self): return 10
@@ -54,19 +58,7 @@ class OrderSpec(Context):
 
 With py.test: `py.test --specs`
 
-With specs.py: `specs.py`
-
-```
-order spec:
-    order total:
-        it should account for quantity
-        with empty quantity:
-            it should be zero
-    order currency:
-        it should be dollars
-        with euros:
-            it should be euros
-```
+With nose: 'nosetests --with-specs'
 
 ## How specs are looked up and run
 
