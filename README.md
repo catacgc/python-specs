@@ -1,18 +1,26 @@
+## Documentation
+
+Detailed documentation can be found at http://pspecs.readthedocs.org/en/latest/
+
 ## Overview
 
-Python specs make it easy to write good python specifications for your test subjects
+*pspecs* is a testing library that concentrates on making it easy to build test subjects, isolate test runs
+and write readable specifications
 
-It has very few conventions and it provides integrations with established python testing tools like [py.test](http://pytest.org/latest/)
+It has very few conventions and it provides integrations with established
+python testing tools like [py.test](http://pytest.org/latest/) or [nose](http://nose.readthedocs.org/en/latest/)
 
 ## Install
 
 ```
-pip install specs
+pip install pspecs
 ```
 
 ## Basic structure - [source](./examples/order_spec.py)
 
 ```python
+from pspecs import Context
+
 class OrderSpec(Context):
 
     def let_quantity(self): return 10
@@ -52,92 +60,4 @@ class OrderSpec(Context):
 
 ## Running the specs
 
-With py.test: `py.test --specs`
-
-With specs.py: `specs.py`
-
-```
-order spec:
-    order total:
-        it should account for quantity
-        with empty quantity:
-            it should be zero
-    order currency:
-        it should be dollars
-        with euros:
-            it should be euros
-```
-
-## How specs are looked up and run
-
-The test runner searches for all `*_spec.py` files that it can find in the directory (subdirectories included) where it is invoked.
-From there it includes all `Context` subclasses that it can find and runs all the examples that are prefixed with `it_`.
-An example is considered to be successful if it doesn't raises an Exception.
-You can use any assertion library you want to form your assertions. Eg: [Sure](http://falcao.it/sure/reference.html).
-
-## Concepts
-
-### Context
-
-A class that describes the behaviour for a test subject and it's comprised of Let Methods,
-Examples, Hooks or other Spec Contexts. It always subclasses the `Context` class
-
-```python
-class OrderSpec(Context):
-    pass
-```
-
-### Example
-
-A method in a Spec Context that begins with `it_` and represents an atomic test unit.
-Usually an example asserts something about a test subject
-
-```python
-def it_should_do_something(self):
-    assert self.subject == 'do something'
-```
-
-### Let Methods
-
-One of the most powerful features of this library are it's `let_` methods.
-Any method defined in a Context like
-
-```python
-def let_rand(self):
-    return random.random()
-```
-
-can later be accessed in that context (and it's child contexts) as a property ( `self.rand` ) and it's return value will be cached
-for the duration of a single example. [See example spec](./specs_spec.py#L30-L42)
-
-These methods are evaluated when an example accesses a property with the name following the `let_` prefix.
-Eg: the method with the name `let_something` will be evaluated only when it will be accessed in an
- example: `self.something`. The return value of the method will be cached for the duration of that
- single example
-
-```python
-def let_a(self): return 1
-def let_b(self): return 2
-def let_sum(self): return self.a + self.b
-
-def it_should_sum_up(self):
-    assert self.sum == 3
-```
-
-### Before And After Hooks
-
- There are two types of hooks: `before` and `after`. These are methods defined in a context and, as the name implies,
- they are run automatically before each example from that context.
- The parent hooks will also run for child context examples in the expected order
-
-```python
-class Parent(Context):
-    def before(self): print 'Runs first'
-
-    class Child(Context):
-        def before(self): print 'Runs second'
-
-        def it_should_run(self):
-            print 'Runs third'
-
-```
+With nose: 'nosetests --with-specs'
